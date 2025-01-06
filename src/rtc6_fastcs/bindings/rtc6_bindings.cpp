@@ -335,6 +335,7 @@ PYBIND11_MODULE(rtc6_bindings, m)
     // Taken directly from the library, might need to be updated with better typing, enums etc.
     m.def("get_last_error", &get_last_error, "get the last error for an ethernet command");
     m.def("set_laser_mode", &set_laser_mode_by_enum_string, "set the mode of the laser, see p645", py::arg("mode"));
+    m.def("set_laser_delays", &set_laser_delays, "set the delays for the laser, see p136", py::arg("laser_on_delay"), py::arg("laser_off_delay"));
     m.def("set_laser_control", &set_laser_control, "set the control settings of the laser, see p641", py::arg("settings"));
     m.def("get_input_pointer", &get_input_pointer, "get the pointer of list input");
     m.def("config_list_memory", &config_list, "set the memory for each position list, see p330", py::arg("list_1_mem"), py::arg("list_2_mem"));
