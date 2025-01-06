@@ -78,12 +78,12 @@ class RtcControlSettings(ConnectedSubController):
         Float(),
         group="LaserControl",
         handler=ControlSettingsHandler(rtc6.set_mark_speed_ctrl),
-    )  # set_jump_speed_ctrl
+    )
     jump_speed = AttrW(
         Float(),
         group="LaserControl",
         handler=ControlSettingsHandler(rtc6.set_jump_speed_ctrl),
-    )  # set_mark_speed_ctrl
+    )
     # set_scanner_delays(jump, mark, polygon) in 10us increments
     # need to all be set at once - special handler
     jump_delay = AttrRW(
