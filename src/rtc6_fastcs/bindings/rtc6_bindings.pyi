@@ -38,11 +38,11 @@ __all__ = [
     "set_end_of_list",
     "set_jump_speed_ctrl",
     "set_laser_control",
+    "set_laser_delays",
     "set_laser_mode",
     "set_mark_speed_ctrl",
     "set_scanner_delays",
     "set_sky_writing_mode",
-    "set_laser_delays",
 ]
 
 class CardInfo:
@@ -279,6 +279,11 @@ def set_laser_control(settings: int) -> None:
     set the control settings of the laser, see p641
     """
 
+def set_laser_delays(laser_on_delay: int, laser_off_delay: int) -> None:
+    """
+    set the delays for the laser, see p136
+    """
+
 def set_laser_mode(mode: str) -> None:
     """
     set the mode of the laser, see p645
@@ -297,16 +302,4 @@ def set_scanner_delays(jump: int, mark: int, polygon: int) -> None:
 def set_sky_writing_mode(speed: int) -> None:
     """
     set the skywriting mode
-    """
-
-def set_laser_delays(laser_on_delay: int, laser_off_delay: int) -> None:
-    """
-    LaserOn delay. As a signed 32-bit value.
-    1 bit equals 1/64 μs.
-    Allowed value range: [–231…+(221–1)].
-    Values over (221–1) are clipped.
-    LaserOff delay. As an unsigned 32-bit value.
-    1 bit equals 1/64 μs.
-    Allowed value range: [0…+(221–1)].
-    Values over (221–1) are clipped.
     """
