@@ -8,6 +8,7 @@
     "files.insertFinalNewline": true,
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
     },
     "cmake.sourceDirectory": "/workspace/src/rtc6_fastcs/bindings",
     "files.associations": {
