@@ -6,10 +6,12 @@ from blueapi.core import MsgGenerator
 from dodal.common.beamlines.beamline_utils import device_factory
 from bluesky.run_engine import call_in_bluesky_event_loop
 
+
 def convert_um_to_bits(um_in: int) -> int:
     """RTC operates in bits. Convert um to bits for drawing"""
-    bits_per_um = 33 # estimated
+    bits_per_um = 33  # estimated
     return int(um_in * bits_per_um)
+
 
 def line(rtc6: Rtc6Eth, x: int, y: int):
     """add an instruction to draw a line to x, y"""
@@ -92,13 +94,16 @@ def go_to_home(rtc6: Rtc6Eth):
     yield from jump(rtc6, 0, 0)
     yield from bps.trigger(rtc6)
 
+
 @bpp.run_decorator()
 def go_to_x_y(rtc6: Rtc6Eth, x: int, y: int):
     yield from bps.stage(rtc6)
     yield from jump(rtc6, x, y)
     yield from bps.trigger(rtc6)
 
+
 # For BlueAPI
+
 
 @device_factory()
 def create_rtc_device() -> Rtc6Eth:

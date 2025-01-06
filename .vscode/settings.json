@@ -7,7 +7,7 @@
     },
     "files.insertFinalNewline": true,
     "[python]": {
-        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.defaultFormatter": "ms-python.black-formatter",
     },
     "cmake.sourceDirectory": "/workspace/src/rtc6_fastcs/bindings",
     "files.associations": {
