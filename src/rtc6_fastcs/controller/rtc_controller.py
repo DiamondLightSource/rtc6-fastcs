@@ -74,12 +74,12 @@ class RtcControlSettings(ConnectedSubController):
         group="LaserControl",
         handler=ControlSettingsHandler(rtc6.set_laser_control),
     )
-    jump_speed = AttrW(
+    mark_speed = AttrW(
         Float(),
         group="LaserControl",
         handler=ControlSettingsHandler(rtc6.set_mark_speed_ctrl),
     )  # set_jump_speed_ctrl
-    mark_speed = AttrW(
+    jump_speed = AttrW(
         Float(),
         group="LaserControl",
         handler=ControlSettingsHandler(rtc6.set_jump_speed_ctrl),
