@@ -117,7 +117,7 @@ class XYCorrectedConnectedSubController(ConnectedSubController):
 
     def correct_xy(self, x: int, y: int) -> tuple[int, int]:
         """Correct for transformations in the laser / oav optics"""
-        print(f"Correcting {(x,y)} by {self.coordinate_correction_matrix}")
+        print(f"Correcting {(x, y)} by {self.coordinate_correction_matrix}")
         corrected = np.matmul(self.coordinate_correction_matrix, [x, y])
         as_ints = (int(corrected[0]), int(corrected[1]))
         print(f"Result: {corrected} => {as_ints}")
