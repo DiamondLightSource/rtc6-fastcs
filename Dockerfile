@@ -7,6 +7,7 @@ FROM python:${PYTHON_VERSION} AS developer
 RUN apt-get update && apt-get install -y --no-install-recommends \
     graphviz \
     build-essential \
+    iputils-ping \
     cmake \
     python3-dev \
     libboost-all-dev \
