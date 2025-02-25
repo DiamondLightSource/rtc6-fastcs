@@ -7,6 +7,8 @@ import asyncio
 RE = RunEngine()
 RTC = Rtc6Eth()
 
+await RTC.connect()ZZ
+
 def cut_cylinder_200l_100w(passes: int):
     shape = [
         (-100, 100, False),
