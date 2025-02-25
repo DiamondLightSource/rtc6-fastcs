@@ -2,7 +2,7 @@ from typing import Generator
 import bluesky.plan_stubs as bps
 import bluesky.preprocessors as bpp
 from rtc6_fastcs.device import Rtc6Eth
-from blueapi.core import MsgGenerator
+#from blueapi.core import MsgGenerator
 from dodal.common.beamlines.beamline_utils import device_factory
 from bluesky.run_engine import call_in_bluesky_event_loop
 
@@ -108,13 +108,13 @@ def go_to_x_y(rtc6: Rtc6Eth, x: int, y: int):
 # For BlueAPI
 
 
-@device_factory()
-def create_rtc_device() -> Rtc6Eth:
-    r = Rtc6Eth()
-    call_in_bluesky_event_loop(r.connect())
-    return r
+# @device_factory()
+# def create_rtc_device() -> Rtc6Eth:
+#     r = Rtc6Eth()
+#     call_in_bluesky_event_loop(r.connect())
+#     return r
 
 
-def polygon_with_arcs(points: list[JumpOrLineInput | ArcInput]) -> MsgGenerator:
-    rtc6 = create_rtc_device()
-    yield from draw_polygon_with_arcs(rtc6, points)
+# def polygon_with_arcs(points: list[JumpOrLineInput | ArcInput]) -> MsgGenerator:
+#     rtc6 = create_rtc_device()
+#     yield from draw_polygon_with_arcs(rtc6, points)
