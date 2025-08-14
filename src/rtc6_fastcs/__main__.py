@@ -71,7 +71,7 @@ def ioc(
         typer.Argument(
             help="Path to the RTC6 correction file",
         ),
-    ] = "./correction_files/D2_2034.ct5",
+    ] = "./correction_files/D3_10019.ct5",
     coordinate_system_correction_file: Annotated[
         str,
         typer.Argument(
