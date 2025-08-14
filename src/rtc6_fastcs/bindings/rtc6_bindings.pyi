@@ -175,7 +175,7 @@ def clear_errors() -> None:
     clear errors in the RTC6 library
     """
 
-def close() -> None:
+def close(arg0: typing.SupportsInt) -> None:
     """
     close the open connection, if any
     """
