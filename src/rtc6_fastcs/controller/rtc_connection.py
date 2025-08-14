@@ -15,6 +15,7 @@ class RtcConnection:
         retry_connect: bool = True,
     ) -> None:
         from rtc6_fastcs.bindings import rtc6_bindings as bindings
+
         retry_connect = True
         self._bindings = bindings
         self._ip = box_ip

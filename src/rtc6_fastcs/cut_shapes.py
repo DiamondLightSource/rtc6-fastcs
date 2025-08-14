@@ -4,12 +4,13 @@ from bluesky.run_engine import RunEngine
 import numpy as np
 import asyncio
 
-class CutShapes():
+
+class CutShapes:
     def __init__(self):
         self.RE = RunEngine()
         self.RTC = Rtc6Eth()
 
-    async def connect(self):    
+    async def connect(self):
         await self.RTC.connect()
 
     def connect_to_rtc(self):
