@@ -250,10 +250,10 @@ py::list get_list_statuses()
     return result;
 }
 
-void close_connection()
+void close_connection(uint card)
 {
     // TODO: check if there is anything to release
-    int releasedCard = release_rtc(1);
+    int releasedCard = release_rtc(card);
     if (!releasedCard)
     {
         throw RtcConnectionError("Could not release card - maybe it was not acquired?");
