@@ -22,6 +22,7 @@ FROM developer AS build
 COPY . /context
 WORKDIR /context
 RUN touch dev-requirements.txt && pip install -c dev-requirements.txt .
+RUN pip install dodal
 
 # The runtime stage copies the built venv into a slim runtime container
 FROM python:${PYTHON_VERSION}-slim AS runtime
