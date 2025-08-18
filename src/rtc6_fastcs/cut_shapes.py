@@ -74,5 +74,8 @@ class CutShapes:
         ]
         self.RE(draw_polygon_with_arcs(self.RTC, shape))
 
-        def cut_polygon_from_gui(self, shape: list[tuple[int, int, bool | int]]):
-            self.RE(draw_polygon_with_arcs(self.RTC, shape))
+    def cut_polygon_from_gui(self, shape):
+        self.RE(draw_polygon(self.RTC, shape))
+
+    def home_scanhead(self):
+        self.RE(go_to_home(self.RTC))
