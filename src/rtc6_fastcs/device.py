@@ -108,7 +108,7 @@ class Rtc6Eth(StandardReadable, AsyncStageable, Triggerable):
     async def set_jump_speed(self, speed: float):
         """Set the jump speed for the scanhead"""
         await self.control_settings.jump_speed.set(speed)
-        
+
     @AsyncStatus.wrap
     async def set_mark_speed(self, speed: float):
         """Set the mark speed for the scanhead"""
@@ -123,5 +123,3 @@ class Rtc6Eth(StandardReadable, AsyncStageable, Triggerable):
     async def set_mark_delay(self, delay: int):
         """Set the mark delay for the scanhead"""
         await self.control_settings.mark_delay.set(delay)
-
-    
