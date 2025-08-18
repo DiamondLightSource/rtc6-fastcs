@@ -10,7 +10,7 @@ from bluesky.run_engine import call_in_bluesky_event_loop
 
 def convert_um_to_bits(um_in: int) -> int:
     """RTC operates in bits. Convert um to bits for drawing"""
-    bits_per_um = 33  # estimated
+    bits_per_um = 26  # estimated
     return int(um_in * bits_per_um)
 
 
