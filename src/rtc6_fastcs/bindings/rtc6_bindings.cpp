@@ -348,6 +348,7 @@ PYBIND11_MODULE(rtc6_bindings, m)
     m.def("set_sky_writing_mode", &set_sky_writing_mode, "set the skywriting mode", py::arg("speed"));
     m.def("set_scanner_delays", &set_scanner_delays_ctrl, "set the scanner delays, in 10us increments", py::arg("jump"), py::arg("mark"), py::arg("polygon"));
     m.def("execute_list", &execute_list, "execute the current list");
+    m.def("sub_call_repeat", &sub_call_repeat, "repeat the current shape in list", py::arg("index"), py::arg("number"));
 
     m.def("get_io_status", &get_io_status, "---");
     m.def("get_list_space", &get_list_space, "---");

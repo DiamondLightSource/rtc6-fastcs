@@ -43,6 +43,7 @@ __all__: list[str] = [
     "set_mark_speed_ctrl",
     "set_scanner_delays",
     "set_sky_writing_mode",
+    "sub_call_repeat",
 ]
 
 class CardInfo:
@@ -304,4 +305,9 @@ def set_scanner_delays(
 def set_sky_writing_mode(speed: typing.SupportsInt) -> None:
     """
     set the skywriting mode
+    """
+
+def sub_call_repeat(index: typing.SupportsInt, number: typing.SupportsInt) -> None:
+    """
+    repeat the current shape in list
     """
