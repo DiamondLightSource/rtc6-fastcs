@@ -326,6 +326,7 @@ PYBIND11_MODULE(rtc6_bindings, m)
     m.def("get_error", &get_error, "get the current error code. 0 is no error. table of errors is on p387, get_error_string() can be called for a human-readable version.");
     m.def("get_error_string", &get_error_string, "get human-readable error info");
     m.def("clear_errors", &clear_all_errors, "clear errors in the RTC6 library");
+    m.def("list_nop", &list_nop, "insert a null operation into the RTC6 list memory. Same as long_delay. Switcheds off signals for laser active operation after a laser off delay. 10us used regardless of delay. Following short list command, ensures subsequent list command only executes in the next 10us clock cycle.");
 
     m.def("add_arc_to", &arc_abs, py::arg("x"), py::arg("y"), py::arg("angle"));
     m.def("add_jump_to", &jump_abs, py::arg("x"), py::arg("y"));
