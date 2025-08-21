@@ -206,6 +206,7 @@ class RtcController(Controller):
         self._info_controller = RtcInfoController(self._conn)
         self.register_sub_controller("INFO", self._info_controller)
         self.register_sub_controller("CONTROL", RtcControlSettings(self._conn))
+        self.register_sub_controller("SUBCALLREPEAT", RtcControlSettings(self._conn))
         list_controller = RtcListOperations(
             self._conn, self.coordinate_system_transform
         )
