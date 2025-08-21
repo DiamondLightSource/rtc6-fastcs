@@ -36,6 +36,7 @@ __all__: list[str] = [
     "init_list_loading",
     "load_list",
     "set_end_of_list",
+    "list_nop",
     "set_jump_speed_ctrl",
     "set_laser_control",
     "set_laser_delays",
@@ -265,6 +266,14 @@ def load_list(list_no: typing.SupportsInt, position: typing.SupportsInt) -> int:
 def set_end_of_list() -> None:
     """
     set the end of the list to be at the current pointer position
+    """
+
+def list_nop() -> None:
+    """
+    insert a null operation into the RTC6 list memory. 
+    Same as long_delay. Switcheds off signals for laser active operation after a laser off delay. 
+    10us used regardless of delay. 
+    Following short list command, ensures subsequent list command only executes in the next 10us clock cycle.
     """
 
 def set_jump_speed_ctrl(speed: typing.SupportsFloat) -> None:
