@@ -63,14 +63,26 @@ class Rtc6List(StandardReadable):
                 self.y = epics_signal_w(int, prefix + "Y")
                 self.proc = epics_signal_x(prefix + "Proc")
 
+    class SubCallRepeat(StandardReadable):
+        def __init__(self, prefix: str = "SUBCALLREPEAT:", name: str = "") -> None:
+            """Used for `sub_call_repeat`, manual page 900
+            Can be used to repeat a subroutine a number of times, essentially drawing same shape multiple times
+            """
+            super().__init__(name)
+            with self.add_children_as_readables():
+                self.index = epics_signal_w(int, prefix + "Index")
+                self.number = epics_signal_w(int, prefix + "Number")
+
     def __init__(self, prefix: str = "LIST:", name: str = "") -> None:
         super().__init__(name)
         with self.add_children_as_readables():
             self.add_arc = self.AddArc(prefix + "ADDARC:")
             self.add_line = self.AddLine(prefix + "ADDLINE:")
             self.add_jump = self.AddJump(prefix + "ADDJUMP:")
+            self.sub_call_repeat = self.SubCallRepeat(prefix + "SUBCALLREPEAT:")
             self.init_list = epics_signal_x(prefix + "InitList")
             self.end_list = epics_signal_x(prefix + "EndList")
+
             self.execute_list = epics_signal_x(prefix + "ExecuteList")
 
 
