@@ -62,7 +62,7 @@ def ioc(
     pv_prefix: Annotated[str, typer.Argument(help="Name of the IOC")] = "RTC6ETH",
     box_ip: Annotated[
         str, typer.Argument(help="IP Address of the RTC6 ethbox")
-    ] = "172.23.17.192",
+    ] = "172.23.171.209",
     program_file_dir: Annotated[
         str, typer.Argument(help="Path to the directory of the RTC6 program files")
     ] = "./rtc6_files/program_files",

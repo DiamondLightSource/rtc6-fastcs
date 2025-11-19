@@ -53,7 +53,7 @@ def test_connect():
     from rtc6_fastcs.bindings import rtc6_bindings as bindings
 
     serial = bindings.connect(
-        "172.23.17.192",
+        "172.23.171.209",
         "./rtc6_files/program_files",
         "./rtc6_files/correction_files/Cor_1to1.ct5",
     )
@@ -66,7 +66,7 @@ def test_card_info():
     from rtc6_fastcs.bindings import rtc6_bindings as bindings
 
     bindings.connect(
-        "172.23.17.192",
+        "172.23.171.209",
         "./rtc6_files/program_files",
         "./rtc6_files/correction_files/Cor_1to1.ct5",
     )
@@ -89,7 +89,7 @@ def test_get_error():
 
     try:
         bindings.connect(
-            "172.23.17.192",
+            "172.23.171.209",
             "./rtc6_files/program_files",
             "./rtc6_files/correction_files/Cor_1to1.ct5",
         )
