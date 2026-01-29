@@ -101,11 +101,7 @@ class RtcControlSettings(ConnectedSubController):
         group="LaserControl",
         handler=DelaysHandler(),
     )
-    sky_writing_mode = AttrW(
-        Int(),
-        group="LaserControl",
-        handler=ControlSettingsHandler(rtc6.set_sky_writing_mode),
-    )
+
 
 
 class XYCorrectedConnectedSubController(ConnectedSubController):
