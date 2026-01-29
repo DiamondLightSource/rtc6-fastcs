@@ -27,12 +27,9 @@ __all__: list[str] = [
     "get_error",
     "get_error_string",
     "get_input_pointer",
-    "get_io_status",
     "get_last_error",
     "get_list_space",
     "get_list_statuses",
-    "get_rtc_mode",
-    "get_temperature",
     "init_list_loading",
     "load_list",
     "set_end_of_list",
@@ -43,6 +40,17 @@ __all__: list[str] = [
     "set_mark_speed_ctrl",
     "set_scanner_delays",
     "set_sky_writing_mode",
+    "list_nop",
+    "save_and_restart_timer",
+    "set_angle_list",
+    "set_offset_xyz_list",
+    "activate_scanahead_autodelays_list",
+    "set_scanahead_laser_shifts_list",
+    "set_scanahead_line_params_list",
+    "set_firstpulse_killer_list",
+    "set_laser_pulses",
+    "set_wobbel_mode",
+    "set_sky_writing_para_list",
 ]
 
 class CardInfo:
@@ -222,11 +230,6 @@ def get_input_pointer() -> int:
     get the pointer of list input
     """
 
-def get_io_status() -> int:
-    """
-    ---
-    """
-
 def get_last_error() -> int:
     """
     get the last error for an ethernet command
@@ -240,16 +243,6 @@ def get_list_space() -> int:
 def get_list_statuses() -> list:
     """
     get the statuses of the command lists
-    """
-
-def get_rtc_mode() -> int:
-    """
-    ---
-    """
-
-def get_temperature() -> float:
-    """
-    ---
     """
 
 def init_list_loading(arg0: typing.SupportsInt) -> None:
@@ -304,4 +297,62 @@ def set_scanner_delays(
 def set_sky_writing_mode(speed: typing.SupportsInt) -> None:
     """
     set the skywriting mode
+    """
+
+def list_nop() -> None:
+    """
+    no-op command for timing/synchronization
+    """
+
+def save_and_restart_timer() -> None:
+    """
+    save current timer state and restart
+    """
+
+def set_angle_list(headNo: typing.SupportsInt, angle: typing.SupportsFloat, at_once: typing.SupportsInt) -> None:
+    """
+    Uses a specified rotation angle to define the rotation matrix M R for all subsequent
+    coordinate transformations
+    """
+
+def set_offset_xyz_list(headNo: typing.SupportsInt, x: typing.SupportsInt, y: typing.SupportsInt, z: typing.SupportsInt, at_once: typing.SupportsInt) -> None:
+    """
+    Defines The offset for coordinate transformations and The global offset in virtual Image Field.
+    """
+
+def activate_scanahead_autodelays_list(mode: typing.SupportsInt) -> int:
+    """ 
+    Switches on or off the automatic (dynamic) calculation of Scanner Delays and Laser Delays.
+    Returns the current mode after activate_scanahead_autodelays has been executed
+    """
+
+def set_scanahead_laser_shifts_list(dLasOn: typing.SupportsInt, dLasOff: typing.SupportsInt) -> None:
+    """
+    Shifts the LASERON signals and LaserOff temporally forward or back.
+    """
+
+def set_scanahead_line_params_list(cornerScale: typing.SupportsInt, endScale: typing.SupportsInt, accScale: typing.SupportsInt) -> None:
+    """
+    Influences the quality of marking results at runtime.
+    Smaller percent values increase throughput at the expense of quality.
+    """
+
+def set_firstpulse_killer_list(length: typing.SupportsInt) -> None:
+    """
+    Sets the length of the FirstPulseKiller signal
+    """
+
+def set_laser_pulses(halfPeriod: typing.SupportsInt, pulseLength: typing.SupportsInt) -> None:
+    """
+    Defines the output period and the pulse lengths of the Laser Control Signals LASER1 and LASER2 for “laser active” operation
+    """
+
+def set_wobbel_mode(transveral: typing.SupportsInt, longditudinal: typing.SupportsInt, freq: typing.SupportsFloat, mode: typing.SupportsInt) -> None:
+    """
+    Switches the Wobbel Mode on and off and defines the parameters for an ellipse-shaped or figure-of-8 wobbel motion
+    """
+
+def set_sky_writing_para_list(timeLag: typing.SupportsFloat, laserOnShift: typing.SupportsInt, nPrev: typing.SupportsInt, nPost: typing.SupportsInt) -> None:
+    """
+    Activates Sky Writing Mode 1 and sets the corresponding parameters or switches Sky Writing off
     """
