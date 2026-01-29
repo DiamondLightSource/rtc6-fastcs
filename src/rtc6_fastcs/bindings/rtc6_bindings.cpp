@@ -282,122 +282,13 @@ void set_laser_mode_by_enum_string(std::string mode)
     }
 }
 
-void list_nop(uint card)
-{
-    // inserts a wait for possible scanner delay, uses 10us regardless
-    const auto result = n_list_nop(card);
-    if (result != ERROR_NO_ERROR)
-    {
-        throw RtcError(failed_text("n_list_nop", card, result));
-    }
-}
-
-void save_and_restart_timer(uint card)
+void save_and_restart_timer()
 {
     // for getting how long a list has taken. not sure if we need this.
-    const auto result = n_save_and_restart_timer(card);
+    const auto result = save_and_restart_timer();
     if (result != ERROR_NO_ERROR)
     {
-        throw RtcError(failed_text("n_save_and_restart_timer", card, result));
-    }
-}
-
-void set_angle_list(uint card, uint listNo, double angle, uint offset)
-{
-    // card, headnumber, angle, at_once
-    // changes card number, head number angle offset to Xdegrees (ccw)
-    // We do this elsewhere, but this may be more elegant.
-    const auto result = n_set_angle_list(card, listNo, angle, offset);
-    if (result != ERROR_NO_ERROR)
-    {
-        throw RtcError(failed_text("n_set_angle_list", card, result));
-    }
-}
-
-void set_offset_xyz_list(uint card, uint listNo, int32_t x, int32_t y, int32_t z, uint mode)
-{
-    // default sets xyz offsets to 0. not sure what default is. keep
-    // see maual p786
-    const auto result = n_set_offset_xyz_list(card, listNo, x, y, z, mode);
-    if (result != ERROR_NO_ERROR)
-    {
-        throw RtcError(failed_text("n_set_offset_xyz_list", card, result));
-    }
-}
-
-void activate_scanahead_autodelays_list(uint card, uint listNo)
-{
-    // set to 1 for automatic scanner delay calculation for SCANahead
-    // 0 is off, -1 is as before
-    // see manual p335
-    const auto result = n_activate_scanahead_autodelays_list(card, listNo);
-    if (result != ERROR_NO_ERROR)
-    {
-        throw RtcError(failed_text("n_activate_scanahead_autodelays_list", card, result));
-    }
-}
-
-void set_scanahead_laser_shifts_list(uint card, int32_t shift_x, int32_t shift_y)
-{
-    // turns it to 0, 0 to stop shifts, not sure what default is so leave it.
-    const auto result = n_set_scanahead_laser_shifts_list(card, shift_x, shift_y);
-    if (result != ERROR_NO_ERROR)
-    {
-        throw RtcError(failed_text("n_set_scanahead_laser_shifts_list", card, result));
-    }
-}
-
-void set_scanahead_line_params_list(uint card, uint p1, uint p2, uint p3)
-{
-    // see manual p808
-    // cornerscale, endscale, accscale
-    // corner (100%=sharp corner)
-    // sets how much laser is on in jumps/acceleration
-    const auto result = n_set_scanahead_line_params_list(card, p1, p2, p3);
-    if (result != ERROR_NO_ERROR)
-    {
-        throw RtcError(failed_text("n_set_scanahead_line_params_list", card, result));
-    }
-}
-
-void set_firstpulse_killer_list(uint card, uint value)
-{
-    // used in YAG mode for laser. Not sure if we need this...
-    const auto result = n_set_firstpulse_killer_list(card, value);
-    if (result != ERROR_NO_ERROR)
-    {
-        throw RtcError(failed_text("n_set_firstpulse_killer_list", card, result));
-    }
-}
-
-void set_laser_pulses(uint card, uint pulse_on_10us, uint pulse_off_10us)
-{
-    // For setting active-high/active-low?
-    const auto result = n_set_laser_pulses(card, pulse_on_10us, pulse_off_10us);
-    if (result != ERROR_NO_ERROR)
-    {
-        throw RtcError(failed_text("n_set_laser_pulses", card, result, 450));
-    }
-}
-
-void set_wobbel_mode(uint card, uint p1, uint p2, uint p3, uint p4)
-{
-    // can use this to broaden the line cut by making it look like a slinky
-    const auto result = n_set_wobbel_mode(card, p1, p2, p3, p4);
-    if (result != ERROR_NO_ERROR)
-    {
-        throw RtcError(failed_text("n_set_wobbel_mode", card, result));
-    }
-}
-
-void set_sky_writing_para_list(uint card, uint p1, uint p2, uint p3, uint p4)
-{
-    // sky writing is basically a 'run up' before it starts the mark so all same speed.
-    // Card, Timelag, LaserOnShift, Nprev, Npost,
-    const auto result = n_set_sky_writing_para_list(card, p1, p2, p3, p4);
-    if (result != ERROR_NO_ERROR)
-    {
-        throw RtcError(failed_text("n_set_sky_writing_para_list", card, result));
+        throw RtcError(failed_text("save_and_restart_timer", result));
     }
 }
 
@@ -451,7 +342,24 @@ PYBIND11_MODULE(rtc6_bindings, m)
     m.def("add_line_to", &mark_abs, py::arg("x"), py::arg("y"));
     m.def("add_laser_on", &laser_on_list, "turn the laser on for n bits of time, see page 450 ", py::arg("time_10us"));
 
-    // Taken directly from the library, might need to be updated with better typing, enums etc.
+    // simple control commands
+    m.def("set_mark_speed_ctrl", &set_mark_speed_ctrl, "set the speed for marks", py::arg("speed"));
+    m.def("set_jump_speed_ctrl", &set_jump_speed_ctrl, "set the speed for jumps", py::arg("speed"));
+    m.def("set_scanner_delays", &set_scanner_delays_ctrl, "set the scanner delays, in 10us increments, see manual p150", py::arg("jump"), py::arg("mark"), py::arg("polygon"));
+
+    // list commands
+    m.def("list_nop", &list_nop, "no-op command for timing/synchronization");
+    m.def("save_and_restart_timer", &save_and_restart_timer, "save current timer state and restart");
+    m.def("set_angle_list", &set_angle_list, "set rotation angle for list", py::arg("headNo") py::arg("angle"), py::arg("at_once"));
+    m.def("set_offset_xyz_list", &set_offset_xyz_list, "set XYZ offset for list", py::arg("headNo"), py::arg("x"), py::arg("y"), py::arg("z"), py::arg("at_once"));
+    m.def("activate_scanahead_autodelays_list", &activate_scanahead_autodelays_list, "enable scanahead auto delays for list", py::arg("mode"));
+    m.def("set_scanahead_laser_shifts_list", &set_scanahead_laser_shifts_list, "set scanahead laser shifts", py::arg("dLasOn"), py::arg("dLasOff"));
+    m.def("set_scanahead_line_params_list", &set_scanahead_line_params_list, "set scanahead line params", py::arg("cornerScale"), py::arg("endScale"), py::arg("accScale"));
+    m.def("set_firstpulse_killer_list", &set_firstpulse_killer_list, "configure first-pulse killer for list", py::arg("length"));
+    m.def("set_laser_pulses", &set_laser_pulses, "set laser pulse on/off durations (10us units)", py::arg("halfPeriod"), py::arg("pulseLength"));
+    m.def("set_wobbel_mode", &set_wobbel_mode, "set wobble/modulation mode", py::arg("transversal"), py::arg("longditudinal"), py::arg("freq"), py::arg("mode"));
+    m.def("set_sky_writing_para_list", &set_sky_writing_para_list, "set sky-writing parameters for list", py::arg("timelag"), py::arg("laserOnShift"), py::arg("nPrev"), py::arg("nPost"));
+    m.def("execute_list", &execute_list, "execute the current list");
     m.def("get_last_error", &get_last_error, "get the last error for an ethernet command");
     m.def("set_laser_mode", &set_laser_mode_by_enum_string, "set the mode of the laser, see p645", py::arg("mode"));
     m.def("set_laser_delays", &set_laser_delays, "set the delays for the laser, see p136", py::arg("laser_on_delay"), py::arg("laser_off_delay"));
@@ -461,27 +369,7 @@ PYBIND11_MODULE(rtc6_bindings, m)
     m.def("load_list", &load_list, "set the pointer to load at position of list_no, see p330", py::arg("list_no"), py::arg("position"));
     m.def("set_end_of_list", &set_end_of_list, "set the end of the list to be at the current pointer position");
 
-    // simple control commands
-    m.def("set_mark_speed_ctrl", &set_mark_speed_ctrl, "set the speed for marks", py::arg("speed"));
-    m.def("set_jump_speed_ctrl", &set_jump_speed_ctrl, "set the speed for jumps", py::arg("speed"));
-    m.def("set_scanner_delays", &set_scanner_delays_ctrl, "set the scanner delays, in 10us increments, see manual p150", py::arg("jump"), py::arg("mark"), py::arg("polygon"));
-    m.def("execute_list", &execute_list, "execute the current list");
-
-    m.def("list_nop", &list_nop, "no-op command for timing/synchronization", py::arg("card"));
-    m.def("save_and_restart_timer", &save_and_restart_timer, "save current timer state and restart", py::arg("card"));
-    m.def("set_angle_list", &set_angle_list, "set rotation angle for list", py::arg("card"), py::arg("list_no"), py::arg("angle"), py::arg("offset"));
-    m.def("set_offset_xyz_list", &set_offset_xyz_list, "set XYZ offset for list", py::arg("card"), py::arg("list_no"), py::arg("x"), py::arg("y"), py::arg("z"), py::arg("mode"));
-    m.def("activate_scanahead_autodelays_list", &activate_scanahead_autodelays_list, "enable scanahead auto delays for list", py::arg("card"), py::arg("list_no"));
-    m.def("set_scanahead_laser_shifts_list", &set_scanahead_laser_shifts_list, "set scanahead laser shifts", py::arg("card"), py::arg("shift_x"), py::arg("shift_y"));
-    m.def("set_scanahead_line_params_list", &set_scanahead_line_params_list, "set scanahead line params", py::arg("card"), py::arg("p1"), py::arg("p2"), py::arg("p3"));
-    m.def("set_firstpulse_killer_list", &set_firstpulse_killer_list, "configure first-pulse killer for list", py::arg("card"), py::arg("value"));
-    m.def("set_laser_pulses", &set_laser_pulses, "set laser pulse on/off durations (10us units)", py::arg("card"), py::arg("pulse_on_10us"), py::arg("pulse_off_10us"));
-    m.def("set_wobbel_mode", &set_wobbel_mode, "set wobble/modulation mode", py::arg("card"), py::arg("p1"), py::arg("p2"), py::arg("p3"), py::arg("p4"));
-    m.def("set_sky_writing_para_list", &set_sky_writing_para_list, "set sky-writing parameters for list", py::arg("card"), py::arg("p1"), py::arg("p2"), py::arg("p3"), py::arg("p4"));
-
     m.def("get_io_status", &get_io_status, "---");
     m.def("get_list_space", &get_list_space, "---");
     m.def("get_config_list", &get_config_list, "---");
-    m.def("get_rtc_mode", &get_rtc_mode, "---");
-    m.def("get_temperature", &get_temperature, "---");
 }
