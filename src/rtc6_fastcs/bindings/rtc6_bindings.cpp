@@ -475,7 +475,7 @@ PYBIND11_MODULE(rtc6_bindings, m)
     // simple control commands
     m.def("set_mark_speed_ctrl", &set_mark_speed_ctrl, "set the speed for marks", py::arg("speed"));
     m.def("set_jump_speed_ctrl", &set_jump_speed_ctrl, "set the speed for jumps", py::arg("speed"));
-    m.def("set_scanner_delays", &set_scanner_delays_ctrl, "set the scanner delays, in 10us increments", py::arg("jump"), py::arg("mark"), py::arg("polygon"));
+    m.def("set_scanner_delays", &set_scanner_delays_ctrl, "set the scanner delays, in 10us increments, see manual p150", py::arg("jump"), py::arg("mark"), py::arg("polygon"));
     m.def("execute_list", &execute_list, "execute the current list");
 
     m.def("set_laser_power", &set_laser_power, "set laser power for channel", py::arg("card"), py::arg("index"), py::arg("power"));
