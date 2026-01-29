@@ -143,7 +143,7 @@ int load_program_and_correction_files(uint card, char *programFilePath, char *co
 // Real functions which we expect to use and expose
 void clear_all_errors() { reset_error(-1); }
 
-void check_conection()
+void check_connection()
 {
     const int connection = eth_check_connection();
     if (!connection) // 1 if connection OK
@@ -204,7 +204,7 @@ private:
 
 CardInfo get_card_info()
 {
-    check_conection();
+    check_connection();
     int32_t out[16];
     auto out_ptr = reinterpret_cast<std::uintptr_t>(&out);
     eth_get_card_info(1, out_ptr);
@@ -317,7 +317,7 @@ PYBIND11_MODULE(rtc6_bindings, m)
         .value("LASER6", LaserMode::LASER6);
 
     // Real functions which are intended to be used
-    m.def("check_connection", &check_conection, "check the active connection to the eth box: throws RtcConnectionError on failure, otherwise does nothing. If it fails, errors must be cleared afterwards.");
+    m.def("check_connection", &check_connection, "check the active connection to the eth box: throws RtcConnectionError on failure, otherwise does nothing. If it fails, errors must be cleared afterwards.");
     m.def("connect", &connect, "connect to the eth-box at the given IP", py::arg("ip_string"), py::arg("program_file_path"), py::arg("correction_file_path"));
     m.def("close", &close_connection, "close the open connection, if any");
     m.def("get_card_info", &get_card_info, "get info for the connected card; throws RtcConnectionError on failure");
