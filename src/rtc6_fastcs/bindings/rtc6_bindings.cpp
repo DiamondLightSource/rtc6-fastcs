@@ -282,17 +282,6 @@ void set_laser_mode_by_enum_string(std::string mode)
     }
 }
 
-void set_laser_power(uint card, uint index, uint power)
-{
-    // tries to set laser power. Don't think this works with out setup. Needs extension socket connectors
-    // see manual p748
-    const auto result = n_set_laser_power(card, index, power);
-    if (result != ERROR_NO_ERROR)
-    {
-        throw RtcError(failed_text("n_set_laser_power", card, result, 322));
-    }
-}
-
 void list_nop(uint card)
 {
     // inserts a wait for possible scanner delay, uses 10us regardless
@@ -478,7 +467,6 @@ PYBIND11_MODULE(rtc6_bindings, m)
     m.def("set_scanner_delays", &set_scanner_delays_ctrl, "set the scanner delays, in 10us increments, see manual p150", py::arg("jump"), py::arg("mark"), py::arg("polygon"));
     m.def("execute_list", &execute_list, "execute the current list");
 
-    m.def("set_laser_power", &set_laser_power, "set laser power for channel", py::arg("card"), py::arg("index"), py::arg("power"));
     m.def("list_nop", &list_nop, "no-op command for timing/synchronization", py::arg("card"));
     m.def("save_and_restart_timer", &save_and_restart_timer, "save current timer state and restart", py::arg("card"));
     m.def("set_angle_list", &set_angle_list, "set rotation angle for list", py::arg("card"), py::arg("list_no"), py::arg("angle"), py::arg("offset"));
