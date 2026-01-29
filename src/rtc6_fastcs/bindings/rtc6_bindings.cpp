@@ -491,8 +491,6 @@ PYBIND11_MODULE(rtc6_bindings, m)
     m.def("set_laser_pulses", &set_laser_pulses, "set laser pulse on/off durations (10us units)", py::arg("card"), py::arg("pulse_on_10us"), py::arg("pulse_off_10us"));
     m.def("set_wobbel_mode", &set_wobbel_mode, "set wobble/modulation mode", py::arg("card"), py::arg("p1"), py::arg("p2"), py::arg("p3"), py::arg("p4"));
     m.def("set_sky_writing_para_list", &set_sky_writing_para_list, "set sky-writing parameters for list", py::arg("card"), py::arg("p1"), py::arg("p2"), py::arg("p3"), py::arg("p4"));
-    m.def("set_trigger8", &set_trigger8, "set trigger8 parameters (firmware-dependent arity)", py::arg("card"), py::arg("p1"), py::arg("p2"), py::arg("p3"), py::arg("p4"), py::arg("p5"), py::arg("p6"), py::arg("p7"), py::arg("p8"), py::arg("p9"));
-    m.def("set_trigger", &set_trigger, "set basic trigger configuration", py::arg("card"), py::arg("mode"), py::arg("param1"), py::arg("param2"));
 
     m.def("get_io_status", &get_io_status, "---");
     m.def("get_list_space", &get_list_space, "---");
