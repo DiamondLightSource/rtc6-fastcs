@@ -62,6 +62,12 @@ class RtcControlSettings(ConnectedSubController):
 
         async def update(self, controller: "RtcControlSettings", attr: AttrR): ...
 
+    @dataclass
+    class LaserPulsesHandler(Sender):
+        async def put(self, controller: "RtcControlSettings", attr: AttrW, value: Any):
+            halfPeriod, pulseLength = map(int, value.split(","))
+            rtc6.set_laser_pulses(halfPeriod, pulseLength)
+
     # Page 645 of the manual
     laser_mode = AttrW(
         String(),
@@ -84,6 +90,12 @@ class RtcControlSettings(ConnectedSubController):
         group="LaserControl",
         handler=ControlSettingsHandler(rtc6.set_jump_speed_ctrl),
     )
+    list_nop = AttrW(Int(), group="ListProgramming", handler=ControlSettingsHandler(rtc6.list_nop))
+    save_restart_timer = AttrW(Int(), group="ListProgramming", handler=ControlSettingsHandler(rtc6.save_and_restart_timer))
+    laser_pulses = AttrW(String(), group="ListProgramming", handler=LaserPulsesHandler())
+    firstpulse_killer = AttrW(Int(), group="ListProgramming", handler=ControlSettingsHandler(rtc6.set_firstpulse_killer_list))
+    wobbel_mode = AttrW(String(), group="ListProgramming", handler=ControlSettingsHandler(rtc6.set_wobbel_mode))
+    sky_writing_para = AttrW(String(), group="ListProgramming", handler=ControlSettingsHandler(rtc6.set_sky_writing_para_list))
     # set_scanner_delays(jump, mark, polygon) in 10us increments
     # need to all be set at once - special handler
     jump_delay = AttrRW(
