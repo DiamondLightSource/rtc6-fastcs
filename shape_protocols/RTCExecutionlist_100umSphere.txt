@@ -1,0 +1,35 @@
+ LaserDESK Version 1.6.23.0
+ Selectd RTC board: RTC6eth, Serial Number 20258562
+ Laser Type: PORTO_150922
+ Job Name: lasershapinggeneral.sld
+ Calibration Factor: 27168.00
+
+ Command List:
+n_set_laser_power(2, 0, 3071);
+n_list_nop(2);
+n_set_laser_power(2, 2, 191);
+n_save_and_restart_timer(2);
+n_set_angle_list(2, 1, 90, 0);
+n_set_offset_xyz_list(2, 1, 0, 0, 0, 1);
+n_set_mark_speed(2, 271.68);
+n_set_jump_speed(2, 815.04);
+n_activate_scanahead_autodelays_list(2, 1);
+n_set_scanahead_laser_shifts_list(2, 0, 0);
+n_set_scanahead_line_params_list(2, 0, 100, 100);
+n_set_firstpulse_killer_list(2, 6400);
+n_set_laser_pulses(2, 3200, 640);
+n_set_wobbel_mode(2, 0, 0, 0, 0);
+n_set_sky_writing_para_list(2, 0, 0, 0, 0);
+n_set_trigger8(2, 1, 1, 2, 255, 255, 4, 9, 9, 0);
+n_jump_abs(2, 2173, 2173);
+n_mark_abs(2, 408, 543);
+n_mark_abs(2, 0, 543);
+n_arc_abs(2, -1311, 0, -314.984081458052);
+n_mark_abs(2, 408, -543);
+n_mark_abs(2, 2173, -2173);
+n_list_nop(2);
+n_set_trigger(2, 0, 16, 17);
+n_jump_abs(2, 0, 0);
+n_list_nop(2);
+n_save_and_restart_timer(2);
+n_set_end_of_list(2);
