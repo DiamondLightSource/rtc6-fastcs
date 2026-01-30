@@ -63,7 +63,7 @@ def draw_square(rtc6: Rtc6Eth, size: int):
     yield from bps.stage(rtc6)
     yield from rectangle(rtc6, size, size)
     yield from bps.trigger(rtc6)
-    go_to_home(rtc6)
+    yield from go_to_home_inner(rtc6)
 
 
 @bpp.run_decorator()
@@ -76,7 +76,7 @@ def draw_polygon(rtc6: Rtc6Eth, points: list[JumpOrLineInput]):
         else:
             yield from jump(rtc6, *point[:-1])
     yield from bps.trigger(rtc6)
-    go_to_home(rtc6)
+    yield from go_to_home_inner(rtc6)
 
 
 @bpp.run_decorator()
@@ -92,11 +92,15 @@ def draw_polygon_with_arcs(rtc6: Rtc6Eth, points: list[JumpOrLineInput | ArcInpu
         else:
             yield from arc(rtc6, *point)
     yield from bps.trigger(rtc6)
-    go_to_home(rtc6)
+    yield from go_to_home_inner(rtc6)
 
 
 @bpp.run_decorator()
 def go_to_home(rtc6: Rtc6Eth):
+    yield from go_to_home_inner(rtc6)
+
+
+def go_to_home_inner(rtc6: Rtc6Eth):
     yield from bps.stage(rtc6)
     yield from jump(rtc6, 0, 0)
     yield from bps.trigger(rtc6)
