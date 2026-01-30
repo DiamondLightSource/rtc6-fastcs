@@ -1,11 +1,11 @@
-from typing import Generator
 import bluesky.plan_stubs as bps
 import bluesky.preprocessors as bpp
+
 from rtc6_fastcs.device import Rtc6Eth
 
 # from blueapi.core import MsgGenerator
-from dodal.common.beamlines.beamline_utils import device_factory
-from bluesky.run_engine import call_in_bluesky_event_loop
+# from dodal.common.beamlines.beamline_utils import device_factory
+# from bluesky.run_engine import call_in_bluesky_event_loop
 
 
 def convert_um_to_bits(um_in: int) -> int:
@@ -43,7 +43,10 @@ def arc(rtc6: Rtc6Eth, x: int, y: int, angle_deg: float):
 
 
 def rectangle(rtc6: Rtc6Eth, x: int, y: int, origin: tuple[int, int] = (0, 0)):
-    """add instructions to draw a rectangle with dimensions x, y and lower left corner at origin"""
+    """Add instructions to draw a rectangle.
+
+    Draws a rectangle with dimensions x, y and lower left corner at origin.
+    """
     yield from jump(rtc6, *origin)
     yield from line(rtc6, x, origin[1])
     yield from line(rtc6, x, y)

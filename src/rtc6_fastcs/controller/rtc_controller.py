@@ -1,18 +1,17 @@
 import asyncio
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass
-import logging
 from typing import Any
 
-from fastcs.attributes import AttrMode, AttrR, AttrW, AttrRW, Handler, Sender
+import numpy as np
+from fastcs.attributes import AttrR, AttrRW, AttrW, Sender
 from fastcs.controller import Controller, SubController
-from fastcs.datatypes import Bool, DataType, Float, Int, String
+from fastcs.datatypes import Bool, Float, Int, String
 from fastcs.wrappers import command
 
-from rtc6_fastcs.controller.rtc_connection import RtcConnection
 from rtc6_fastcs.bindings import rtc6_bindings as rtc6
-
-import numpy as np
+from rtc6_fastcs.controller.rtc_connection import RtcConnection
 
 LOGGER = logging.getLogger(__name__)
 
@@ -68,6 +67,67 @@ class RtcControlSettings(ConnectedSubController):
             halfPeriod, pulseLength = map(int, value.split(","))
             rtc6.set_laser_pulses(halfPeriod, pulseLength)
 
+    @dataclass
+    class WobbelModeHandler(Sender):
+        async def put(self, controller: "RtcControlSettings", attr: AttrW, value: Any):
+            # transversal, longitudinal, freq, mode
+            parts = value.split(",")
+            rtc6.set_wobbel_mode(
+                int(parts[0]), int(parts[1]), float(parts[2]), int(parts[3])
+            )
+
+    @dataclass
+    class SkyWritingParaHandler(Sender):
+        async def put(self, controller: "RtcControlSettings", attr: AttrW, value: Any):
+            # timelag, laserOnShift, nPrev, nPost
+            parts = value.split(",")
+            rtc6.set_sky_writing_para_list(
+                float(parts[0]), int(parts[1]), int(parts[2]), int(parts[3])
+            )
+
+    @dataclass
+    class AngleListHandler(Sender):
+        async def put(self, controller: "RtcControlSettings", attr: AttrW, value: Any):
+            # headNo, angle, at_once
+            parts = value.split(",")
+            rtc6.set_angle_list(int(parts[0]), float(parts[1]), int(parts[2]))
+
+    @dataclass
+    class OffsetXYZListHandler(Sender):
+        async def put(self, controller: "RtcControlSettings", attr: AttrW, value: Any):
+            # headNo, x, y, z, at_once
+            parts = value.split(",")
+            rtc6.set_offset_xyz_list(
+                int(parts[0]),
+                int(parts[1]),
+                int(parts[2]),
+                int(parts[3]),
+                int(parts[4]),
+            )
+
+    @dataclass
+    class ScanaheadLaserShiftsHandler(Sender):
+        async def put(self, controller: "RtcControlSettings", attr: AttrW, value: Any):
+            # dLasOn, dLasOff
+            parts = value.split(",")
+            rtc6.set_scanahead_laser_shifts_list(int(parts[0]), int(parts[1]))
+
+    @dataclass
+    class ScanaheadLineParamsHandler(Sender):
+        async def put(self, controller: "RtcControlSettings", attr: AttrW, value: Any):
+            # cornerScale, endScale, accScale
+            parts = value.split(",")
+            rtc6.set_scanahead_line_params_list(
+                int(parts[0]), int(parts[1]), int(parts[2])
+            )
+
+    @dataclass
+    class LaserDelaysHandler(Sender):
+        async def put(self, controller: "RtcControlSettings", attr: AttrW, value: Any):
+            # laser_on_delay, laser_off_delay
+            parts = value.split(",")
+            rtc6.set_laser_delays(int(parts[0]), int(parts[1]))
+
     # Page 645 of the manual
     laser_mode = AttrW(
         String(),
@@ -90,12 +150,62 @@ class RtcControlSettings(ConnectedSubController):
         group="LaserControl",
         handler=ControlSettingsHandler(rtc6.set_jump_speed_ctrl),
     )
-    list_nop = AttrW(Int(), group="ListProgramming", handler=ControlSettingsHandler(rtc6.list_nop))
-    save_restart_timer = AttrW(Int(), group="ListProgramming", handler=ControlSettingsHandler(rtc6.save_and_restart_timer))
-    laser_pulses = AttrW(String(), group="ListProgramming", handler=LaserPulsesHandler())
-    firstpulse_killer = AttrW(Int(), group="ListProgramming", handler=ControlSettingsHandler(rtc6.set_firstpulse_killer_list))
-    wobbel_mode = AttrW(String(), group="ListProgramming", handler=ControlSettingsHandler(rtc6.set_wobbel_mode))
-    sky_writing_para = AttrW(String(), group="ListProgramming", handler=ControlSettingsHandler(rtc6.set_sky_writing_para_list))
+    list_nop = AttrW(
+        Int(), group="ListProgramming", handler=ControlSettingsHandler(rtc6.list_nop)
+    )
+    save_restart_timer = AttrW(
+        Int(),
+        group="ListProgramming",
+        handler=ControlSettingsHandler(rtc6.save_and_restart_timer),
+    )
+    laser_pulses = AttrW(
+        String(), group="ListProgramming", handler=LaserPulsesHandler()
+    )
+    firstpulse_killer = AttrW(
+        Int(),
+        group="ListProgramming",
+        handler=ControlSettingsHandler(rtc6.set_firstpulse_killer_list),
+    )
+    wobbel_mode = AttrW(
+        String(),
+        group="ListProgramming",
+        handler=WobbelModeHandler(),
+    )
+    sky_writing_para = AttrW(
+        String(),
+        group="ListProgramming",
+        handler=SkyWritingParaHandler(),
+    )
+    angle_list = AttrW(
+        String(),
+        group="ListProgramming",
+        handler=AngleListHandler(),
+    )
+    offset_xyz_list = AttrW(
+        String(),
+        group="ListProgramming",
+        handler=OffsetXYZListHandler(),
+    )
+    scanahead_autodelays = AttrW(
+        Int(),
+        group="ListProgramming",
+        handler=ControlSettingsHandler(rtc6.activate_scanahead_autodelays_list),
+    )
+    scanahead_laser_shifts = AttrW(
+        String(),
+        group="ListProgramming",
+        handler=ScanaheadLaserShiftsHandler(),
+    )
+    scanahead_line_params = AttrW(
+        String(),
+        group="ListProgramming",
+        handler=ScanaheadLineParamsHandler(),
+    )
+    laser_delays = AttrW(
+        String(),
+        group="LaserControl",
+        handler=LaserDelaysHandler(),
+    )
     # set_scanner_delays(jump, mark, polygon) in 10us increments
     # need to all be set at once - special handler
     jump_delay = AttrRW(
@@ -113,7 +223,6 @@ class RtcControlSettings(ConnectedSubController):
         group="LaserControl",
         handler=DelaysHandler(),
     )
-
 
 
 class XYCorrectedConnectedSubController(ConnectedSubController):
@@ -204,7 +313,8 @@ class RtcController(Controller):
             )
         except Exception:
             LOGGER.warning(
-                "Failed to open coordinate system transformation file, defaulting to identity matrix."
+                "Failed to open coordinate system transformation file, "
+                "defaulting to identity matrix."
             )
             self.coordinate_system_transform = np.array([[1, 0], [0, 1]])
         self._conn = RtcConnection(

@@ -3,10 +3,9 @@ import subprocess
 from functools import cache
 from pathlib import Path
 from typing import Annotated
-from fastcs.launch import FastCS
 
-from fastcs.backend import Backend
 import typer
+from fastcs.launch import FastCS
 from fastcs.transport.epics.options import EpicsIOCOptions, EpicsOptions
 
 from rtc6_fastcs.controller import RtcController
@@ -48,8 +47,8 @@ def install_library():
 
 
 def create_ui_and_docs(controller: RtcController, prefix: str, output_path: Path):
-    from fastcs.transport.epics.gui import EpicsGUI, EpicsGUIOptions
     from fastcs.transport.epics.docs import EpicsDocs, EpicsDocsOptions
+    from fastcs.transport.epics.gui import EpicsGUI, EpicsGUIOptions
 
     gui = EpicsGUI(controller, prefix)
     gui.create_gui(EpicsGUIOptions(output_path / "index.bob"))

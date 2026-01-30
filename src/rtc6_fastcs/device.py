@@ -1,27 +1,47 @@
-from ophyd_async.core import StandardReadable, AsyncStageable
 from bluesky.protocols import Triggerable
+from ophyd_async.core import AsyncStageable, AsyncStatus, StandardReadable
 from ophyd_async.epics.core import (
-    epics_signal_rw,
     epics_signal_r,
-    epics_signal_x,
+    epics_signal_rw,
     epics_signal_w,
+    epics_signal_x,
 )
-from ophyd_async.core import AsyncStatus
 
 
 class Rtc6ControlSettings(StandardReadable):
     def __init__(self, prefix: str = "CONTROL:", name: str = "") -> None:
         super().__init__(name)
         with self.add_children_as_readables():
-            # TODO: make a python Enum to match the c++ enum so that we can limit this to the allowed values
+            # TODO: make a python Enum to match the c++ enum
+            # so that we can limit this to the allowed values
             self.laser_mode = epics_signal_rw(str, prefix + "LaserMode")
-            # This should be split up and made nicer if it is every really used, but currently is always just set to 0
+            # This should be split up and made nicer if it is ever really used,
+            # but currently is always just set to 0
             self.laser_control = epics_signal_rw(int, prefix + "LaserControl")
             self.jump_speed = epics_signal_rw(float, prefix + "JumpSpeed")
             self.mark_speed = epics_signal_rw(float, prefix + "MarkSpeed")
             self.jump_delay = epics_signal_rw(int, prefix + "JumpDelay")
             self.mark_delay = epics_signal_rw(int, prefix + "MarkDelay")
             self.polygon_delay = epics_signal_rw(int, prefix + "PolygonDelay")
+            self.laser_delays = epics_signal_w(str, prefix + "LaserDelays")
+            # List programming commands
+            self.list_nop = epics_signal_w(int, prefix + "ListNop")
+            self.save_restart_timer = epics_signal_w(int, prefix + "SaveRestartTimer")
+            self.laser_pulses = epics_signal_w(str, prefix + "LaserPulses")
+            self.firstpulse_killer = epics_signal_w(int, prefix + "FirstpulseKiller")
+            self.wobbel_mode = epics_signal_w(str, prefix + "WobbelMode")
+            self.sky_writing_para = epics_signal_w(str, prefix + "SkyWritingPara")
+            self.angle_list = epics_signal_w(str, prefix + "AngleList")
+            self.offset_xyz_list = epics_signal_w(str, prefix + "OffsetXyzList")
+            self.scanahead_autodelays = epics_signal_w(
+                int, prefix + "ScanaheadAutodelays"
+            )
+            self.scanahead_laser_shifts = epics_signal_w(
+                str, prefix + "ScanaheadLaserShifts"
+            )
+            self.scanahead_line_params = epics_signal_w(
+                str, prefix + "ScanaheadLineParams"
+            )
 
 
 class Rtc6Info(StandardReadable):

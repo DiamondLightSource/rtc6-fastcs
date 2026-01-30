@@ -282,16 +282,6 @@ void set_laser_mode_by_enum_string(std::string mode)
     }
 }
 
-void save_and_restart_timer()
-{
-    // for getting how long a list has taken. not sure if we need this.
-    const auto result = save_and_restart_timer();
-    if (result != ERROR_NO_ERROR)
-    {
-        throw RtcError(failed_text("save_and_restart_timer", result));
-    }
-}
-
 // Definition of our exposed python module - things must be registered here to be accessible
 PYBIND11_MODULE(rtc6_bindings, m)
 {
@@ -350,7 +340,7 @@ PYBIND11_MODULE(rtc6_bindings, m)
     // list commands
     m.def("list_nop", &list_nop, "no-op command for timing/synchronization");
     m.def("save_and_restart_timer", &save_and_restart_timer, "save current timer state and restart");
-    m.def("set_angle_list", &set_angle_list, "set rotation angle for list", py::arg("headNo") py::arg("angle"), py::arg("at_once"));
+    m.def("set_angle_list", &set_angle_list, "set rotation angle for list", py::arg("headNo"), py::arg("angle"), py::arg("at_once"));
     m.def("set_offset_xyz_list", &set_offset_xyz_list, "set XYZ offset for list", py::arg("headNo"), py::arg("x"), py::arg("y"), py::arg("z"), py::arg("at_once"));
     m.def("activate_scanahead_autodelays_list", &activate_scanahead_autodelays_list, "enable scanahead auto delays for list", py::arg("mode"));
     m.def("set_scanahead_laser_shifts_list", &set_scanahead_laser_shifts_list, "set scanahead laser shifts", py::arg("dLasOn"), py::arg("dLasOff"));
