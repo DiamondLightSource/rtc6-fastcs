@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.12)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY /workspace/src/rtc6_fastcs/bindings)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 project(rtc6_bindings)
 find_package(pybind11 REQUIRED PATHS /venv/lib/python3.11/site-packages/pybind11/share/cmake/pybind11/)
 pybind11_add_module(rtc6_bindings rtc6_bindings.cpp)
