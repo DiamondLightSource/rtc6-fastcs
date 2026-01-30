@@ -13,6 +13,7 @@ from rtc6_fastcs.plan_stubs import (
     draw_polygon,
     draw_polygon_with_arcs,
     go_to_home,
+    go_to_home_inner,
 )
 
 
@@ -268,7 +269,24 @@ def run_execution_list(rtc: Rtc6Eth, filepath: str | Path):
     yield from bps.stage(rtc)
     yield from execution_list_to_plan(rtc, config, commands)
     yield from bps.trigger(rtc)
-    yield from go_to_home(rtc)
+    yield from go_to_home_inner(rtc)
+
+
+@bpp.run_decorator()
+def run_execution_list_repeated(rtc: Rtc6Eth, filepath: str | Path, passes: int = 1):
+    """
+    Run a vendor execution list file multiple times as a single Bluesky plan.
+
+    Args:
+        rtc: The RTC6 device
+        filepath: Path to the RTCExecutionlist_*.txt file
+        passes: Number of times to repeat the cut
+    """
+    config, commands = parse_execution_list(filepath)
+    yield from bps.stage(rtc)
+    yield from execution_list_to_plan(rtc, config, commands * passes)
+    yield from bps.trigger(rtc)
+    yield from go_to_home_inner(rtc)
 
 
 class CutShapes:
@@ -357,26 +375,28 @@ class CutShapes:
         """
         self.RE(run_execution_list(self.RTC, filepath))
 
-    def cut_100um_sphere(self):
+    def cut_100um_sphere(self, passes: int = 1):
         """Run the 100um sphere cut from vendor execution list"""
         self.RE(
-            run_execution_list(
-                self.RTC, "shape_protocols/RTCExecutionlist_100umSphere.txt"
+            run_execution_list_repeated(
+                self.RTC, "shape_protocols/RTCExecutionlist_100umSphere.txt", passes
             )
         )
 
-    def cut_150um_sphere(self):
+    def cut_150um_sphere(self, passes: int = 1):
         """Run the 150um sphere cut from vendor execution list"""
         self.RE(
-            run_execution_list(
-                self.RTC, "shape_protocols/RTCExecutionlist_150umSphere.txt"
+            run_execution_list_repeated(
+                self.RTC, "shape_protocols/RTCExecutionlist_150umSphere.txt", passes
             )
         )
 
-    def cut_orientation_triangle(self):
+    def cut_orientation_triangle(self, passes: int = 1):
         """Run the orientation triangle cut from vendor execution list"""
         self.RE(
-            run_execution_list(
-                self.RTC, "shape_protocols/RTCExecutionlist_OrientationTriangle.txt"
+            run_execution_list_repeated(
+                self.RTC,
+                "shape_protocols/RTCExecutionlist_OrientationTriangle.txt",
+                passes,
             )
         )
