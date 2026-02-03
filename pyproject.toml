@@ -10,7 +10,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 description = "FastCS IOC for the ScanLab RTC6 Ethernet laser controller"
-dependencies = ["fastcs~=0.8.0", "aioca", "numpy"]
+dependencies = ["fastcs~=0.11.3", "aioca", "numpy"]
 dynamic = ["version"]
 license.file = "LICENSE"
 readme = "README.md"
