@@ -127,11 +127,13 @@ class Rtc6Eth(StandardReadable, AsyncStageable, Triggerable):
     @AsyncStatus.wrap
     async def set_jump_speed(self, speed: float):
         """Set the jump speed for the scanhead"""
+        speed = speed * 27168
         await self.control_settings.jump_speed.set(speed)
 
     @AsyncStatus.wrap
     async def set_mark_speed(self, speed: float):
         """Set the mark speed for the scanhead"""
+        speed = speed * 27168
         await self.control_settings.mark_speed.set(speed)
 
     @AsyncStatus.wrap
