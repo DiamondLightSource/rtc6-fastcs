@@ -4,10 +4,10 @@ from dataclasses import dataclass
 import logging
 from typing import Any
 
-from fastcs.attributes import AttrMode, AttrR, AttrW, AttrRW, Handler, Sender
-from fastcs.controller import Controller, SubController
-from fastcs.datatypes import Bool, DataType, Float, Int, String
-from fastcs.wrappers import command
+from fastcs.attributes import AttrR, AttrW, AttrRW, AttributeIO, AttributeIORef
+from fastcs.controllers import Controller
+from fastcs.datatypes import Bool, Float, Int, String
+from fastcs.methods import command
 
 from rtc6_fastcs.controller.rtc_connection import RtcConnection
 from rtc6_fastcs.bindings import rtc6_bindings as rtc6
@@ -17,9 +17,9 @@ import numpy as np
 LOGGER = logging.getLogger(__name__)
 
 
-class ConnectedSubController(SubController):
-    def __init__(self, conn: RtcConnection) -> None:
-        super().__init__()
+class ConnectedSubController(Controller):
+    def __init__(self, conn: RtcConnection, **kwargs) -> None:
+        super().__init__(**kwargs)
         self._conn = conn
 
 
@@ -27,92 +27,101 @@ class RtcInfoController(ConnectedSubController):
     firmware_version = AttrR(Int(), group="Information")
     serial_number = AttrR(Int(), group="Information")
     ip_address = AttrR(String(), group="Information")
-    is_acquired = AttrR(Bool(znam="False", onam="True"), group="Information")
+    is_acquired = AttrR(Bool(), group="Information")
 
     async def proc_cardinfo(self) -> None:
         info = self._conn.get_card_info()
         await asyncio.gather(
-            self.firmware_version.set(info.firmware_version),
-            self.serial_number.set(info.serial_number),
-            self.ip_address.set(info.ip_address),
-            self.is_acquired.set(info.is_acquired),
+            self.firmware_version.update(info.firmware_version),
+            self.serial_number.update(info.serial_number),
+            self.ip_address.update(info.ip_address),
+            self.is_acquired.update(info.is_acquired),
+        )
+
+
+@dataclass
+class ControlSettingsIORef(AttributeIORef):
+    cmd: Callable
+
+
+class ControlSettingsIO(AttributeIO[Any, ControlSettingsIORef]):
+    async def send(self, attr: AttrW[Any, ControlSettingsIORef], value: Any) -> None:
+        attr.io_ref.cmd(value)
+
+
+@dataclass
+class DelaysIORef(AttributeIORef):
+    pass
+
+
+class DelaysIO(AttributeIO[int, DelaysIORef]):
+    def __init__(self, controller: "RtcControlSettings"):
+        super().__init__()
+        self._controller = controller
+
+    async def send(self, attr: AttrW[int, DelaysIORef], value: int) -> None:
+        await attr.update(value)  # type: ignore[union-attr]
+        rtc6.set_scanner_delays(
+            self._controller.jump_delay.get(),
+            self._controller.mark_delay.get(),
+            self._controller.polygon_delay.get(),
         )
 
 
 class RtcControlSettings(ConnectedSubController):
-    @dataclass
-    class ControlSettingsHandler(Sender):
-        cmd: Callable
-
-        async def put(
-            self, controller: ConnectedSubController, attr: AttrW, value: Any
-        ):
-            self.cmd(value)
-
-    @dataclass
-    class DelaysHandler(Sender):
-        update_period: float | None = None
-
-        async def put(self, controller: "RtcControlSettings", attr: AttrW, value: Any):
-            rtc6.set_scanner_delays(
-                controller.jump_delay.get(),
-                controller.mark_delay.get(),
-                controller.polygon_delay.get(),
-            )
-
-        async def update(self, controller: "RtcControlSettings", attr: AttrR): ...
-
     # Page 645 of the manual
     laser_mode = AttrW(
         String(),
         group="LaserControl",
-        allowed_values=[rtc6.LaserMode(i).name for i in range(7)],
-        handler=ControlSettingsHandler(rtc6.set_laser_mode),
+        io_ref=ControlSettingsIORef(cmd=rtc6.set_laser_mode),
     )
     laser_control = AttrW(
         Int(),
         group="LaserControl",
-        handler=ControlSettingsHandler(rtc6.set_laser_control),
+        io_ref=ControlSettingsIORef(cmd=rtc6.set_laser_control),
     )
     mark_speed = AttrW(
         Float(),
         group="LaserControl",
-        handler=ControlSettingsHandler(rtc6.set_mark_speed_ctrl),
+        io_ref=ControlSettingsIORef(cmd=rtc6.set_mark_speed_ctrl),
     )
     jump_speed = AttrW(
         Float(),
         group="LaserControl",
-        handler=ControlSettingsHandler(rtc6.set_jump_speed_ctrl),
+        io_ref=ControlSettingsIORef(cmd=rtc6.set_jump_speed_ctrl),
     )
     # set_scanner_delays(jump, mark, polygon) in 10us increments
     # need to all be set at once - special handler
     jump_delay = AttrRW(
         Int(),
         group="LaserControl",
-        handler=DelaysHandler(),
+        io_ref=DelaysIORef(),
     )
     mark_delay = AttrRW(
         Int(),
         group="LaserControl",
-        handler=DelaysHandler(),
+        io_ref=DelaysIORef(),
     )
     polygon_delay = AttrRW(
         Int(),
         group="LaserControl",
-        handler=DelaysHandler(),
+        io_ref=DelaysIORef(),
     )
     sky_writing_mode = AttrW(
         Int(),
         group="LaserControl",
-        handler=ControlSettingsHandler(rtc6.set_sky_writing_mode),
+        io_ref=ControlSettingsIORef(cmd=rtc6.set_sky_writing_mode),
     )
+
+    def __init__(self, conn: RtcConnection) -> None:
+        super().__init__(conn, ios=[ControlSettingsIO(), DelaysIO(self)])
 
 
 class XYCorrectedConnectedSubController(ConnectedSubController):
     def __init__(
-        self, conn: RtcConnection, coordinate_correction_matrix: np.ndarray
+        self, conn: RtcConnection, coordinate_correction_matrix: np.ndarray, **kwargs
     ) -> None:
-        super().__init__(conn)
+        super().__init__(conn, **kwargs)
         self.coordinate_correction_matrix = coordinate_correction_matrix
 
     def correct_xy(self, x: int, y: int) -> tuple[int, int]:
@@ -203,29 +212,31 @@ class RtcController(Controller):
             box_ip, program_file_dir, correction_file, retry_connect
         )
 
-        self._info_controller = RtcInfoController(self._conn)
-        self.register_sub_controller("INFO", self._info_controller)
-        self.register_sub_controller("CONTROL", RtcControlSettings(self._conn))
+        info_controller = RtcInfoController(self._conn)
+        self.add_sub_controller("INFO", info_controller)
+        self.add_sub_controller("CONTROL", RtcControlSettings(self._conn))
         list_controller = RtcListOperations(
             self._conn, self.coordinate_system_transform
         )
-        self.register_sub_controller("LIST", list_controller)
-        list_controller.register_sub_controller(
+        self.add_sub_controller("LIST", list_controller)
+        list_controller.add_sub_controller(
             "ADDJUMP",
             list_controller.AddJump(self._conn, self.coordinate_system_transform),
         )
-        list_controller.register_sub_controller(
+        list_controller.add_sub_controller(
             "ADDARC",
             list_controller.AddArc(self._conn, self.coordinate_system_transform),
         )
-        list_controller.register_sub_controller(
+        list_controller.add_sub_controller(
             "ADDLINE",
             list_controller.AddLine(self._conn, self.coordinate_system_transform),
         )
 
     async def connect(self) -> None:
         await self._conn.connect()
-        await self._info_controller.proc_cardinfo()
+        info = self.sub_controllers["INFO"]
+        assert isinstance(info, RtcInfoController)
+        await info.proc_cardinfo()
 
-    async def close(self) -> None:
+    async def disconnect(self) -> None:
         await self._conn.close()
