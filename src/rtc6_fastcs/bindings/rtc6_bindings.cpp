@@ -143,7 +143,7 @@ int load_program_and_correction_files(uint card, char *programFilePath, char *co
 // Real functions which we expect to use and expose
 void clear_all_errors() { reset_error(-1); }
 
-void check_conection()
+void check_connection()
 {
     const int connection = eth_check_connection();
     if (!connection) // 1 if connection OK
@@ -204,7 +204,7 @@ private:
 
 CardInfo get_card_info()
 {
-    check_conection();
+    check_connection();
     int32_t out[16];
     auto out_ptr = reinterpret_cast<std::uintptr_t>(&out);
     eth_get_card_info(1, out_ptr);
@@ -317,7 +317,7 @@ PYBIND11_MODULE(rtc6_bindings, m)
         .value("LASER6", LaserMode::LASER6);
 
     // Real functions which are intended to be used
-    m.def("check_connection", &check_conection, "check the active connection to the eth box: throws RtcConnectionError on failure, otherwise does nothing. If it fails, errors must be cleared afterwards.");
+    m.def("check_connection", &check_connection, "check the active connection to the eth box: throws RtcConnectionError on failure, otherwise does nothing. If it fails, errors must be cleared afterwards.");
     m.def("connect", &connect, "connect to the eth-box at the given IP", py::arg("ip_string"), py::arg("program_file_path"), py::arg("correction_file_path"));
     m.def("close", &close_connection, "close the open connection, if any");
     m.def("get_card_info", &get_card_info, "get info for the connected card; throws RtcConnectionError on failure");
@@ -333,7 +333,24 @@ PYBIND11_MODULE(rtc6_bindings, m)
     m.def("add_line_to", &mark_abs, py::arg("x"), py::arg("y"));
     m.def("add_laser_on", &laser_on_list, "turn the laser on for n bits of time, see page 450 ", py::arg("time_10us"));
 
-    // Taken directly from the library, might need to be updated with better typing, enums etc.
+    // simple control commands
+    m.def("set_mark_speed_ctrl", &set_mark_speed_ctrl, "set the speed for marks", py::arg("speed"));
+    m.def("set_jump_speed_ctrl", &set_jump_speed_ctrl, "set the speed for jumps", py::arg("speed"));
+    m.def("set_scanner_delays", &set_scanner_delays_ctrl, "set the scanner delays, in 10us increments, see manual p150", py::arg("jump"), py::arg("mark"), py::arg("polygon"));
+
+    // list commands
+    m.def("list_nop", &list_nop, "no-op command for timing/synchronization");
+    m.def("save_and_restart_timer", &save_and_restart_timer, "save current timer state and restart");
+    m.def("set_angle_list", &set_angle_list, "set rotation angle for list", py::arg("headNo"), py::arg("angle"), py::arg("at_once"));
+    m.def("set_offset_xyz_list", &set_offset_xyz_list, "set XYZ offset for list", py::arg("headNo"), py::arg("x"), py::arg("y"), py::arg("z"), py::arg("at_once"));
+    m.def("activate_scanahead_autodelays_list", &activate_scanahead_autodelays_list, "enable scanahead auto delays for list", py::arg("mode"));
+    m.def("set_scanahead_laser_shifts_list", &set_scanahead_laser_shifts_list, "set scanahead laser shifts", py::arg("dLasOn"), py::arg("dLasOff"));
+    m.def("set_scanahead_line_params_list", &set_scanahead_line_params_list, "set scanahead line params", py::arg("cornerScale"), py::arg("endScale"), py::arg("accScale"));
+    m.def("set_firstpulse_killer_list", &set_firstpulse_killer_list, "configure first-pulse killer for list", py::arg("length"));
+    m.def("set_laser_pulses", &set_laser_pulses, "set laser pulse on/off durations (10us units)", py::arg("halfPeriod"), py::arg("pulseLength"));
+    m.def("set_wobbel_mode", &set_wobbel_mode, "set wobble/modulation mode", py::arg("transversal"), py::arg("longditudinal"), py::arg("freq"), py::arg("mode"));
+    m.def("set_sky_writing_para_list", &set_sky_writing_para_list, "set sky-writing parameters for list", py::arg("timelag"), py::arg("laserOnShift"), py::arg("nPrev"), py::arg("nPost"));
+    m.def("execute_list", &execute_list, "execute the current list");
     m.def("get_last_error", &get_last_error, "get the last error for an ethernet command");
     m.def("set_laser_mode", &set_laser_mode_by_enum_string, "set the mode of the laser, see p645", py::arg("mode"));
     m.def("set_laser_delays", &set_laser_delays, "set the delays for the laser, see p136", py::arg("laser_on_delay"), py::arg("laser_off_delay"));
@@ -343,16 +360,7 @@ PYBIND11_MODULE(rtc6_bindings, m)
     m.def("load_list", &load_list, "set the pointer to load at position of list_no, see p330", py::arg("list_no"), py::arg("position"));
     m.def("set_end_of_list", &set_end_of_list, "set the end of the list to be at the current pointer position");
 
-    // simple control commands
-    m.def("set_mark_speed_ctrl", &set_mark_speed_ctrl, "set the speed for marks", py::arg("speed"));
-    m.def("set_jump_speed_ctrl", &set_jump_speed_ctrl, "set the speed for jumps", py::arg("speed"));
-    m.def("set_sky_writing_mode", &set_sky_writing_mode, "set the skywriting mode", py::arg("speed"));
-    m.def("set_scanner_delays", &set_scanner_delays_ctrl, "set the scanner delays, in 10us increments", py::arg("jump"), py::arg("mark"), py::arg("polygon"));
-    m.def("execute_list", &execute_list, "execute the current list");
-
     m.def("get_io_status", &get_io_status, "---");
     m.def("get_list_space", &get_list_space, "---");
     m.def("get_config_list", &get_config_list, "---");
-    m.def("get_rtc_mode", &get_rtc_mode, "---");
-    m.def("get_temperature", &get_temperature, "---");
 }

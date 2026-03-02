@@ -1,11 +1,7 @@
 from bluesky.protocols import Triggerable
 from ophyd_async.core import AsyncStageable, AsyncStatus, StandardReadable
-from ophyd_async.epics.core import (
-    epics_signal_r,
-    epics_signal_rw,
-    epics_signal_w,
-    epics_signal_x,
-)
+from ophyd_async.epics.core import (epics_signal_r, epics_signal_rw,
+                                    epics_signal_w, epics_signal_x)
 
 
 class Rtc6ControlSettings(StandardReadable):
@@ -23,6 +19,25 @@ class Rtc6ControlSettings(StandardReadable):
             self.jump_delay = epics_signal_rw(int, prefix + "JumpDelay")
             self.mark_delay = epics_signal_rw(int, prefix + "MarkDelay")
             self.polygon_delay = epics_signal_rw(int, prefix + "PolygonDelay")
+            self.laser_delays = epics_signal_w(str, prefix + "LaserDelays")
+            # List programming commands
+            self.list_nop = epics_signal_w(int, prefix + "ListNop")
+            self.save_restart_timer = epics_signal_w(int, prefix + "SaveRestartTimer")
+            self.laser_pulses = epics_signal_w(str, prefix + "LaserPulses")
+            self.firstpulse_killer = epics_signal_w(int, prefix + "FirstpulseKiller")
+            self.wobbel_mode = epics_signal_w(str, prefix + "WobbelMode")
+            self.sky_writing_para = epics_signal_w(str, prefix + "SkyWritingPara")
+            self.angle_list = epics_signal_w(str, prefix + "AngleList")
+            self.offset_xyz_list = epics_signal_w(str, prefix + "OffsetXyzList")
+            self.scanahead_autodelays = epics_signal_w(
+                int, prefix + "ScanaheadAutodelays"
+            )
+            self.scanahead_laser_shifts = epics_signal_w(
+                str, prefix + "ScanaheadLaserShifts"
+            )
+            self.scanahead_line_params = epics_signal_w(
+                str, prefix + "ScanaheadLineParams"
+            )
 
 
 class Rtc6Info(StandardReadable):

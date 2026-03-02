@@ -3,6 +3,7 @@ bindings for the scanlab rtc6 ethernet laser controller
 """
 
 from __future__ import annotations
+
 import typing
 
 __all__: list[str] = [
@@ -12,6 +13,7 @@ __all__: list[str] = [
     "RtcConnectionError",
     "RtcError",
     "RtcListError",
+    "activate_scanahead_autodelays_list",
     "add_arc_to",
     "add_jump_to",
     "add_laser_on",
@@ -31,19 +33,25 @@ __all__: list[str] = [
     "get_last_error",
     "get_list_space",
     "get_list_statuses",
-    "get_rtc_mode",
-    "get_temperature",
     "init_list_loading",
-    "load_list",
-    "set_end_of_list",
     "list_nop",
+    "load_list",
+    "save_and_restart_timer",
+    "set_angle_list",
+    "set_end_of_list",
+    "set_firstpulse_killer_list",
     "set_jump_speed_ctrl",
     "set_laser_control",
     "set_laser_delays",
     "set_laser_mode",
+    "set_laser_pulses",
     "set_mark_speed_ctrl",
+    "set_offset_xyz_list",
+    "set_scanahead_laser_shifts_list",
+    "set_scanahead_line_params_list",
     "set_scanner_delays",
-    "set_sky_writing_mode",
+    "set_sky_writing_para_list",
+    "set_wobbel_mode",
 ]
 
 class CardInfo:
@@ -156,6 +164,11 @@ class RtcError(Exception):
 class RtcListError(Exception):
     pass
 
+def activate_scanahead_autodelays_list(mode: typing.SupportsInt) -> None:
+    """
+    enable scanahead auto delays for list
+    """
+
 def add_arc_to(
     x: typing.SupportsInt, y: typing.SupportsInt, angle: typing.SupportsFloat
 ) -> None: ...
@@ -243,24 +256,31 @@ def get_list_statuses() -> list:
     get the statuses of the command lists
     """
 
-def get_rtc_mode() -> int:
-    """
-    ---
-    """
-
-def get_temperature() -> float:
-    """
-    ---
-    """
-
 def init_list_loading(arg0: typing.SupportsInt) -> None:
     """
     initialise the given list (1 or 2)
     """
 
+def list_nop() -> None:
+    """
+    no-op command for timing/synchronization
+    """
+
 def load_list(list_no: typing.SupportsInt, position: typing.SupportsInt) -> int:
     """
     set the pointer to load at position of list_no, see p330
+    """
+
+def save_and_restart_timer() -> None:
+    """
+    save current timer state and restart
+    """
+
+def set_angle_list(
+    headNo: typing.SupportsInt, angle: typing.SupportsFloat, at_once: typing.SupportsInt
+) -> None:
+    """
+    set rotation angle for list
     """
 
 def set_end_of_list() -> None:
@@ -298,19 +318,69 @@ def set_laser_mode(mode: str) -> None:
     set the mode of the laser, see p645
     """
 
+def set_laser_pulses(
+    halfPeriod: typing.SupportsInt, pulseLength: typing.SupportsInt
+) -> None:
+    """
+    set laser pulse on/off durations (10us units)
+    """
+
 def set_mark_speed_ctrl(speed: typing.SupportsFloat) -> None:
     """
     set the speed for marks
+    """
+
+def set_offset_xyz_list(
+    headNo: typing.SupportsInt,
+    x: typing.SupportsInt,
+    y: typing.SupportsInt,
+    z: typing.SupportsInt,
+    at_once: typing.SupportsInt,
+) -> None:
+    """
+    set XYZ offset for list
+    """
+
+def set_scanahead_laser_shifts_list(
+    dLasOn: typing.SupportsInt, dLasOff: typing.SupportsInt
+) -> None:
+    """
+    set scanahead laser shifts
+    """
+
+def set_scanahead_line_params_list(
+    cornerScale: typing.SupportsInt,
+    endScale: typing.SupportsInt,
+    accScale: typing.SupportsInt,
+) -> None:
+    """
+    set scanahead line params
     """
 
 def set_scanner_delays(
     jump: typing.SupportsInt, mark: typing.SupportsInt, polygon: typing.SupportsInt
 ) -> None:
     """
-    set the scanner delays, in 10us increments
+    set the scanner delays, in 10us increments, see manual p150
     """
 
-def set_sky_writing_mode(speed: typing.SupportsInt) -> None:
+def set_sky_writing_para_list(
+    timelag: typing.SupportsFloat,
+    laserOnShift: typing.SupportsInt,
+    nPrev: typing.SupportsInt,
+    nPost: typing.SupportsInt,
+) -> None:
     """
-    set the skywriting mode
+    set sky-writing parameters for list
+    """
+
+def set_wobbel_mode(
+    transversal: typing.SupportsInt,
+    longditudinal: typing.SupportsInt,
+    freq: typing.SupportsFloat,
+    mode: typing.SupportsInt,
+) -> None:
+    """
+    set wobble/modulation mode
+    """
     """

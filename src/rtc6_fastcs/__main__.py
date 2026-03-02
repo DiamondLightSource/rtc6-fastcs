@@ -6,12 +6,8 @@ from typing import Annotated
 
 import typer
 from fastcs import FastCS
-from fastcs.transports import (
-    EpicsCATransport,
-    EpicsDocsOptions,
-    EpicsGUIOptions,
-    EpicsIOCOptions,
-)
+from fastcs.transports import (EpicsCATransport, EpicsDocsOptions,
+                               EpicsGUIOptions, EpicsIOCOptions)
 
 from rtc6_fastcs.controller import RtcController
 

@@ -1,11 +1,11 @@
-from typing import Generator
 import bluesky.plan_stubs as bps
 import bluesky.preprocessors as bpp
+
 from rtc6_fastcs.device import Rtc6Eth
 
 # from blueapi.core import MsgGenerator
-from dodal.common.beamlines.beamline_utils import device_factory
-from bluesky.run_engine import call_in_bluesky_event_loop
+# from dodal.common.beamlines.beamline_utils import device_factory
+# from bluesky.run_engine import call_in_bluesky_event_loop
 
 
 def convert_um_to_bits(um_in: int) -> int:
@@ -43,7 +43,10 @@ def arc(rtc6: Rtc6Eth, x: int, y: int, angle_deg: float):
 
 
 def rectangle(rtc6: Rtc6Eth, x: int, y: int, origin: tuple[int, int] = (0, 0)):
-    """add instructions to draw a rectangle with dimensions x, y and lower left corner at origin"""
+    """Add instructions to draw a rectangle.
+
+    Draws a rectangle with dimensions x, y and lower left corner at origin.
+    """
     yield from jump(rtc6, *origin)
     yield from line(rtc6, x, origin[1])
     yield from line(rtc6, x, y)
@@ -60,7 +63,7 @@ def draw_square(rtc6: Rtc6Eth, size: int):
     yield from bps.stage(rtc6)
     yield from rectangle(rtc6, size, size)
     yield from bps.trigger(rtc6)
-    go_to_home(rtc6)
+    yield from go_to_home_inner(rtc6)
 
 
 @bpp.run_decorator()
@@ -73,7 +76,7 @@ def draw_polygon(rtc6: Rtc6Eth, points: list[JumpOrLineInput]):
         else:
             yield from jump(rtc6, *point[:-1])
     yield from bps.trigger(rtc6)
-    go_to_home(rtc6)
+    yield from go_to_home_inner(rtc6)
 
 
 @bpp.run_decorator()
@@ -89,11 +92,15 @@ def draw_polygon_with_arcs(rtc6: Rtc6Eth, points: list[JumpOrLineInput | ArcInpu
         else:
             yield from arc(rtc6, *point)
     yield from bps.trigger(rtc6)
-    go_to_home(rtc6)
+    yield from go_to_home_inner(rtc6)
 
 
 @bpp.run_decorator()
 def go_to_home(rtc6: Rtc6Eth):
+    yield from go_to_home_inner(rtc6)
+
+
+def go_to_home_inner(rtc6: Rtc6Eth):
     yield from bps.stage(rtc6)
     yield from jump(rtc6, 0, 0)
     yield from bps.trigger(rtc6)
