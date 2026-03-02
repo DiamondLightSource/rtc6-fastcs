@@ -173,6 +173,11 @@ class RtcListOperations(XYCorrectedConnectedSubController):
             print("---")
 
     @command()
+    async def list_nop(self):
+        rtc6 = self._conn.get_bindings()
+        rtc6.list_nop()
+
+    @command()
     async def init_list(self):
         rtc6 = self._conn.get_bindings()
         rtc6.config_list_memory(10000000, 1)  # Just put everything on list one
