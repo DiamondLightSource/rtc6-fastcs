@@ -4,10 +4,14 @@ from functools import cache
 from pathlib import Path
 from typing import Annotated
 
-from fastcs import FastCS
-from fastcs.transports import EpicsCATransport, EpicsDocsOptions, EpicsGUIOptions, EpicsIOCOptions
-
 import typer
+from fastcs import FastCS
+from fastcs.transports import (
+    EpicsCATransport,
+    EpicsDocsOptions,
+    EpicsGUIOptions,
+    EpicsIOCOptions,
+)
 
 from rtc6_fastcs.controller import RtcController
 
