@@ -1,0 +1,30 @@
+Traceback (most recent call last):
+  File "/dls/science/groups/i23/aithre/aithre/bin/guiv4_prod.py", line 977, in <module>
+    mainWin = MainWindow()
+              ^^^^^^^^^^^^
+  File "/dls/science/groups/i23/aithre/aithre/bin/guiv4_prod.py", line 367, in __init__
+    self.rtc6Control("acquire")
+  File "/dls/science/groups/i23/aithre/aithre/bin/guiv4_prod.py", line 501, in rtc6Control
+    self.rtc6.connect_to_rtc()
+  File "/dls/science/groups/i23/aithre/rtc6-fastcs/src/rtc6_fastcs/cut_shapes.py", line 17, in connect_to_rtc
+    asyncio.run(self.connect())
+  File "/dls_sw/apps/python/miniforge/4.10.0-0/envs/python3.11/lib/python3.11/asyncio/runners.py", line 190, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/dls_sw/apps/python/miniforge/4.10.0-0/envs/python3.11/lib/python3.11/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dls_sw/apps/python/miniforge/4.10.0-0/envs/python3.11/lib/python3.11/asyncio/base_events.py", line 653, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/dls/science/groups/i23/aithre/rtc6-fastcs/src/rtc6_fastcs/cut_shapes.py", line 14, in connect
+    await self.RTC.connect()
+  File "/dls/science/groups/i23/aithre/aithre/.venv/lib/python3.11/site-packages/ophyd_async/core/_device.py", line 272, in connect
+    await connect_task
+  File "/dls/science/groups/i23/aithre/aithre/.venv/lib/python3.11/site-packages/ophyd_async/core/_device.py", line 126, in connect_real
+    await wait_for_connection(**coros)
+  File "/dls/science/groups/i23/aithre/aithre/.venv/lib/python3.11/site-packages/ophyd_async/core/_utils.py", line 204, in wait_for_connection
+    raise NotConnectedError.with_other_exceptions_logged(exceptions)
+ophyd_async.core._utils.NotConnectedError: 
+list: NotConnectedError:
+    list_nop: NotConnectedError: ca://RTC6ETH:LIST:ListNop
