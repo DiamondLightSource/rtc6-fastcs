@@ -5,6 +5,8 @@
 #include "scanlab/rtc6.h"
 #include "boost/format.hpp"
 #include <bitset>
+#include <sstream>
+#include <vector>
 
 namespace py = pybind11;
 using boost::format;
@@ -282,6 +284,124 @@ void set_laser_mode_by_enum_string(std::string mode)
     }
 }
 
+// Helper to trim whitespace
+static std::string trim(const std::string& s) {
+    auto start = s.find_first_not_of(" \t\r\n");
+    if (start == std::string::npos) return "";
+    auto end = s.find_last_not_of(" \t\r\n");
+    return s.substr(start, end - start + 1);
+}
+
+// Parse arguments from a command string like "set_laser_power(0, 4095)"
+static std::pair<std::string, std::vector<std::string>> parse_command(const std::string& cmd) {
+    auto paren_start = cmd.find('(');
+    if (paren_start == std::string::npos) {
+        throw RtcListError("Invalid command format (no opening parenthesis): " + cmd);
+    }
+    auto paren_end = cmd.rfind(')');
+    if (paren_end == std::string::npos) {
+        throw RtcListError("Invalid command format (no closing parenthesis): " + cmd);
+    }
+
+    std::string name = trim(cmd.substr(0, paren_start));
+    std::string args_str = cmd.substr(paren_start + 1, paren_end - paren_start - 1);
+
+    std::vector<std::string> args;
+    if (!trim(args_str).empty()) {
+        std::stringstream ss(args_str);
+        std::string arg;
+        while (std::getline(ss, arg, ',')) {
+            args.push_back(trim(arg));
+        }
+    }
+    return {name, args};
+}
+
+static void check_arg_count(const std::string& name, const std::vector<std::string>& args, size_t expected) {
+    if (args.size() != expected) {
+        throw RtcListError(str(format("Command '%1%' expects %2% arguments, got %3%") % name % expected % args.size()));
+    }
+}
+
+void dispatch_list_command(const std::string& cmd) {
+    auto [name, args] = parse_command(cmd);
+
+    if (name == "set_laser_power") {
+        check_arg_count(name, args, 2);
+        set_laser_power(std::stoul(args[0]), std::stoul(args[1]));
+    } else if (name == "save_and_restart_timer") {
+        check_arg_count(name, args, 0);
+        save_and_restart_timer();
+    } else if (name == "set_angle_list") {
+        check_arg_count(name, args, 3);
+        set_angle(std::stoul(args[0]), std::stod(args[1]), std::stoul(args[2]));
+    } else if (name == "set_offset_xyz_list") {
+        check_arg_count(name, args, 5);
+        set_offset_xyz_list(std::stoul(args[0]), std::stoi(args[1]), std::stoi(args[2]), std::stoi(args[3]), std::stoul(args[4]));
+    } else if (name == "activate_scanahead_autodelays_list") {
+        check_arg_count(name, args, 1);
+        activate_scanahead_autodelays_list(std::stoul(args[0]));
+    } else if (name == "set_scanahead_laser_shifts_list") {
+        check_arg_count(name, args, 2);
+        set_scanahead_laser_shifts_list(std::stoi(args[0]), std::stoi(args[1]));
+    } else if (name == "set_scanahead_line_params_list") {
+        check_arg_count(name, args, 3);
+        set_scanahead_line_params_list(std::stoul(args[0]), std::stoul(args[1]), std::stoul(args[2]));
+    } else if (name == "set_firstpulse_killer_list") {
+        check_arg_count(name, args, 1);
+        set_firstpulse_killer_list(std::stoul(args[0]));
+    } else if (name == "set_laser_pulses") {
+        check_arg_count(name, args, 2);
+        set_laser_pulses(std::stoul(args[0]), std::stoul(args[1]));
+    } else if (name == "set_wobbel_mode") {
+        check_arg_count(name, args, 4);
+        set_wobbel_mode(std::stoul(args[0]), std::stoul(args[1]), std::stod(args[2]), std::stoi(args[3]));
+    } else if (name == "set_sky_writing_para_list") {
+        check_arg_count(name, args, 4);
+        set_sky_writing_para_list(std::stod(args[0]), std::stoi(args[1]), std::stoul(args[2]), std::stoul(args[3]));
+    } else if (name == "set_trigger8") {
+        check_arg_count(name, args, 9);
+        set_trigger8(std::stoul(args[0]), std::stoul(args[1]), std::stoul(args[2]),
+                     std::stoul(args[3]), std::stoul(args[4]), std::stoul(args[5]),
+                     std::stoul(args[6]), std::stoul(args[7]), std::stoul(args[8]));
+    } else if (name == "set_trigger") {
+        check_arg_count(name, args, 3);
+        set_trigger(std::stoul(args[0]), std::stoul(args[1]), std::stoul(args[2]));
+    } else if (name == "sub_call_repeat") {
+        check_arg_count(name, args, 2);
+        sub_call_repeat(std::stoul(args[0]), std::stoul(args[1]));
+    } else if (name == "timed_mark_rel") {
+        check_arg_count(name, args, 3);
+        timed_mark_rel(std::stoi(args[0]), std::stoi(args[1]), std::stod(args[2]));
+    } else if (name == "jump_abs") {
+        check_arg_count(name, args, 2);
+        jump_abs(std::stoi(args[0]), std::stoi(args[1]));
+    } else if (name == "mark_abs") {
+        check_arg_count(name, args, 2);
+        mark_abs(std::stoi(args[0]), std::stoi(args[1]));
+    } else if (name == "arc_abs") {
+        check_arg_count(name, args, 3);
+        arc_abs(std::stoi(args[0]), std::stoi(args[1]), std::stod(args[2]));
+    } else if (name == "list_nop") {
+        check_arg_count(name, args, 0);
+        list_nop();
+    } else if (name == "set_end_of_list") {
+        check_arg_count(name, args, 0);
+        set_end_of_list();
+    } else if (name == "set_mark_speed") {
+        check_arg_count(name, args, 1);
+        set_mark_speed(std::stod(args[0]));
+    } else if (name == "set_jump_speed") {
+        check_arg_count(name, args, 1);
+        set_jump_speed(std::stod(args[0]));
+    } else if (name == "set_sky_writing_mode_list") {
+        check_arg_count(name, args, 1);
+        set_sky_writing_mode_list(std::stoul(args[0]));
+    } else {
+        throw RtcListError("Unknown list command: " + name);
+    }
+}
+
 // Definition of our exposed python module - things must be registered here to be accessible
 PYBIND11_MODULE(rtc6_bindings, m)
 {
@@ -355,4 +475,8 @@ PYBIND11_MODULE(rtc6_bindings, m)
     m.def("get_config_list", &get_config_list, "---");
     m.def("get_rtc_mode", &get_rtc_mode, "---");
     m.def("get_temperature", &get_temperature, "---");
+
+    m.def("dispatch_list_command", &dispatch_list_command,
+          "Dispatch a list command string to the RTC6. Format: 'command_name(arg1, arg2, ...)'",
+          py::arg("command"));
 }

@@ -21,6 +21,7 @@ __all__: list[str] = [
     "close",
     "config_list_memory",
     "connect",
+    "dispatch_list_command",
     "execute_list",
     "get_card_info",
     "get_config_list",
@@ -313,4 +314,17 @@ def set_scanner_delays(
 def set_sky_writing_mode(speed: typing.SupportsInt) -> None:
     """
     set the skywriting mode
+    """
+
+def dispatch_list_command(command: str) -> None:
+    """
+    Dispatch a list command string to the RTC6.
+    Format: 'command_name(arg1, arg2, ...)'
+    Supported commands: set_laser_power, save_and_restart_timer, set_angle_list,
+    set_offset_xyz_list, activate_scanahead_autodelays_list,
+    set_scanahead_laser_shifts_list, set_scanahead_line_params_list,
+    set_firstpulse_killer_list, set_laser_pulses, set_wobbel_mode,
+    set_sky_writing_para_list, set_trigger8, set_trigger, sub_call_repeat,
+    timed_mark_rel, jump_abs, mark_abs, arc_abs, list_nop, set_end_of_list,
+    set_mark_speed, set_jump_speed, set_sky_writing_mode_list
     """
