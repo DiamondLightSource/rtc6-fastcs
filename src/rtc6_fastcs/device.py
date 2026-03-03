@@ -74,6 +74,8 @@ class Rtc6List(StandardReadable):
             self.list_nop = epics_signal_x(prefix + "ListNop")
             self.end_list = epics_signal_x(prefix + "EndList")
             self.execute_list = epics_signal_x(prefix + "ExecuteList")
+            self.command_string = epics_signal_w(str, prefix + "CommandString")
+            self.dispatch_command = epics_signal_x(prefix + "DispatchCommand")
 
 
 class Rtc6Eth(StandardReadable, AsyncStageable, Triggerable):
