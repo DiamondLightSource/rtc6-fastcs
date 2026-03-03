@@ -135,6 +135,14 @@ class XYCorrectedConnectedSubController(ConnectedSubController):
 
 class RtcListOperations(XYCorrectedConnectedSubController):
     list_pointer_position = AttrR(Int(), group="ListInfo")
+    command_string = AttrW(String(), group="ListOps")
+
+    @command(group="ListOps")
+    async def dispatch_command(self):
+        """Dispatch a command string to the RTC6 list"""
+        rtc6 = self._conn.get_bindings()
+        cmd = self.command_string.get()
+        rtc6.dispatch_list_command(cmd)
 
     class AddJump(XYCorrectedConnectedSubController):
         x = AttrRW(Int(), group="ListOps")
