@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=64", "setuptools_scm[toml]>=8"]
+requires = ["setuptools>=82.0.1", "setuptools_scm[toml]>=10.0.5"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -10,7 +10,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 description = "FastCS IOC for the ScanLab RTC6 Ethernet laser controller"
-dependencies = ["fastcs~=0.8.0", "aioca", "numpy"]
+dependencies = ["fastcs~=0.12.0", "aioca", "numpy"]
 dynamic = ["version"]
 license.file = "LICENSE"
 readme = "README.md"
